@@ -16,7 +16,7 @@ exports.addExercise = (req, res, next) => {
     User.getById(userid)
     .then(user => {
         exercise.save();
-        const { userid, ...upexercise } = exercise;
+        const { userid, _id, ...upexercise } = exercise;
         const merged = {...user, ...upexercise};
         res.json(merged);
     })
@@ -25,7 +25,6 @@ exports.addExercise = (req, res, next) => {
 
 exports.getExecises = (req, res, next) => {
     const userid = req.query.userId;
-    console.log(userid);
     Exercise.getAllByUser(userid)
     .then(result => {
         let to = req.query.to;
@@ -37,17 +36,19 @@ exports.getExecises = (req, res, next) => {
                         return new Date(obj.date) >= from;
                     });
         }
+        console.log(result);
         if(to){
-            to = new Date(from);
+            to = new Date(to);
             result.log = result.log.filter(function( obj ) {
-                        return new Date(obj.date) <= from;
+                        return new Date(obj.date) <= to;
                     });
         }
         if(limit){
             console.log(result);
             limit = parseInt(limit);
-            result.log = result.log.slice(0, limit + 1);
+            result.log = result.log.slice(0, limit);
         }
+        result.count = result.log.length;
         res.json(result);
     })
     .catch(err => console.log(err));

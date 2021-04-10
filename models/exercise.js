@@ -6,7 +6,12 @@ module.exports = class Exercise{
         this.userid = userid;
         this.description = description;
         this.duration = duration;
-        this.date = date ? date : new Date().toISOString().split('T')[0];
+        if(date){
+            this.date = new Date(date).toDateString();
+        }
+        else{
+            this.date = new Date().toDateString();
+        }
     }
 
     save(){
@@ -39,11 +44,8 @@ module.exports = class Exercise{
             },
             {
                 $project: {
-                    "username": 1,
-                    "count": { $size:"$log" },
-                    "log.description": 1,
-                    "log.duration": 1,
-                    "log.date": 1
+                    "log.userid": 0,
+                    "log._id": 0
                 }
             }
         ]).next();
